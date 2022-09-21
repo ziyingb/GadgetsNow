@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        {% include 'includes/css.html' %}
+        <!-- Additional head block for css-->
+        {% block head %}
+        {% endblock head %}
+        <title>{% block title %}{% endblock %}</title>
+    </head>
+    <body>
+        
+        <!--Navbar block-->
+        {% include 'includes/navbar.html' %}
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %} 
+            {% if messages %} 
+                {% for category, message in messages %} 
+                    {% if category == 'error' %}
+                    <div class="alert alert-danger alter-dismissable fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success alter-dismissable fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endif %} 
+                {% endfor %} 
+            {% endif %} 
+        {% endwith %}
+        <!-- Main content -->
+        <div class="container p-3">
+            {% block content %}
+            {% endblock content %}
+        </div>
+        <!--Footer block-->
+        {% include 'includes/footer.html' %}
+        
+        {% include 'includes/scripts.html' %}
+        <!--Additional JS files will go into javascript block-->
+        {% block javascripts %}
+        {% endblock javascripts %}
+    </body>
+</html>
