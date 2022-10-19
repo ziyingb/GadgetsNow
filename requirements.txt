@@ -15,3 +15,9 @@ flask_bcrypt
 flask_sqlalchemy
 sqlalchemy
 flask_migrate
+pyopenssl
+stripe
+blinker
+Click
+itsdangerous
+MarkupSafe
