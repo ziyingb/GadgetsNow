@@ -21,3 +21,6 @@ blinker
 Click
 itsdangerous
 MarkupSafe
+mysql-connector-python
+mysql-connector-python-rf
+mysql-connector

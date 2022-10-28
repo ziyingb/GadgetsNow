@@ -23,13 +23,13 @@
             {{ form.password(class="form-control", type="password") }}
             <label for="floatingPassword">Password</label>
         </div>
+        {{form.recaptcha}}
         <p class="fw-bold">
             {% if msg %}
                 {{ msg | safe }}
             {% endif %}                                  
         </p>
         <br />
-
         <button class="w-100 btn btn-lg btn-primary" type="submit">Sign Up</button>
         <hr class="my-4">
         <small class="text-muted">

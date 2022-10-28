@@ -9,7 +9,7 @@ class User(sa.Model, UserMixin):
     password = sa.Column(sa.String(255), nullable = False)
     salt = sa.Column(sa.String(255), nullable = False)
     verified = sa.Column(sa.Boolean, nullable = False)
-    verified_dt = sa.Column(sa.DateTime)
+    verified_dt = sa.Column(sa.DateTime, nullable = True)
 
     def __init__(self,username, email, password, salt, verified, verified_dt):
         self.username = username
@@ -26,12 +26,18 @@ class User(sa.Model, UserMixin):
         self.salt = salt
         self.verified = verified
 
+    def set_verified(self, verified, verified_dt):
+        self.verified = verified
+        self.verified_dt = verified_dt
+        sa.session.commit()
+        return self 
+
     def __repr__(self):
         return str(self.id) + ' - ' + str(self.username)
 
     def save(self):
-        sa.session.add ( self )
-        sa.session.commit( )
+        sa.session.add (self)
+        sa.session.commit()
         return self 
 
 class UserInformation(sa.Model):
@@ -50,3 +56,4 @@ class UserInformation(sa.Model):
     city = sa.Column(sa.String(200))
     postal_code = sa.Column(sa.Integer)
     last_modified_dt = sa.Column(sa.DateTime)
+
