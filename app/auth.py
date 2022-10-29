@@ -10,7 +10,7 @@ from .forms import *
 import flask
 import stripe
 from datetime import datetime
-
+import re
 
 auth = Blueprint('auth', __name__)
 s = URLSafeTimedSerializer('GadgetsNow3103TimedSerializer!')
@@ -103,6 +103,19 @@ def register():
             user_by_email = User.query.filter_by(email=email).first()
             if user or user_by_email:
                 msg = 'Error: User already exists!'
+            # check password length
+            elif len(password) < 10:
+                msg = 'Password must be at least 10 characters.'
+            # check password has number
+            elif re.search('[0-9]',password) is None:
+                msg = 'Make sure your password has a number in it'
+            # check password has capital letter
+            elif re.search('[A-Z]',password) is None: 
+                msg = 'Make sure your password has a capital letter in it'
+             # check password has special character
+            elif re.search('[^a-zA-Z0-9]',password) is None: 
+                msg = 'Make sure your password has a special character in it'
+             # if all requirements above match
             else:         
                 token = s.dumps(email, salt='verify_account')
                 message = Message('Confirm Email', sender='GadgetsNow3103@gmail.com', recipients = [email])
