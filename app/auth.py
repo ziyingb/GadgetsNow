@@ -44,7 +44,7 @@ def login():
                     if bcrypt.check_password_hash(user_by_username.password, password):
                         login_user(user_by_username, remember_me)
                         flask.flash('Logged in successfully. (Username)')
-                        return redirect(url_for('views.index'))
+                        return redirect(url_for('auth.login_2fa'))
                     else:
                         msg = "Invalid Credentials. Please try again!"
                 elif user_by_email:
@@ -52,7 +52,7 @@ def login():
                     if bcrypt.check_password_hash(user_by_email.password, password):
                         login_user(user_by_email)
                         flask.flash('Logged in successfully. (Email)')
-                        return redirect(url_for('views.index'))
+                        return redirect(url_for('auth.login_2fa'))
                     else:
                         msg = "Invalid Credentials. Please try again!"
                 else:
@@ -61,7 +61,35 @@ def login():
     else:
         flask.flash('Please logout before proceeding.')
         return redirect(url_for('views.index'))
+    
+@auth.route('/login/2fa')
+def login_2fa():
+    global secret
+    # secret = pyotp.random_base32()
+    if secret is None:
+        secret = pyotp.random_base32()
+    return render_template('login_2fa.html', secret=secret)
 
+# 2FA form route
+@auth.route('/login/2fa', methods=["POST"])
+def login_2fa_form():
+
+     # getting secret key used by user
+    secret = request.form.get("secret")
+    # getting OTP provided by user
+    otp = int(request.form.get("otp"))
+
+    # verifying submitted OTP with PyOTP
+    if pyotp.TOTP(secret).verify(otp):
+        # inform users if OTP is valid
+        flash("The TOTP 2FA token is valid","success")
+        ####### redirect to home page
+        return redirect(url_for('views.index'))
+    else:
+        # inform users if OTP is invalid
+        flash("You have supplied an invalid 2FA token!","danger")
+        return redirect(url_for('auth.login_2fa'))
+    
 @auth.route('/verify_account/<token>')
 def verify_account(token):
     try:
