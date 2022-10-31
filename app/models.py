@@ -50,3 +50,18 @@ class UserInformation(sa.Model):
     city = sa.Column(sa.String(200))
     postal_code = sa.Column(sa.Integer)
     last_modified_dt = sa.Column(sa.DateTime)
+
+class ProductInformation(sa.Model):
+    id = sa.Column(sa.Integer, primary_key = True)
+    name = sa.Column(sa.String(255))
+    desc = sa.Column(sa.String(255))
+    category = sa.Column(sa.String(120))
+    price = sa.Column(sa.Integer)
+    url = sa.Column(sa.String(1024))
+
+    def __init__(self, name, desc, category, price, url):
+        self.name = name
+        self.desc = desc
+        self.category = category
+        self.price = price
+        self.url = url
