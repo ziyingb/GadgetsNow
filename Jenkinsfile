@@ -3,7 +3,7 @@ pipeline {
 	stages {
 		stage('Checkout SCM') {
 			steps {
-				git '/home/Documents/Github/GadgetsNow'
+				git '/home/GadgetsNow'
 			}
 		}
 
