@@ -1,3 +1,4 @@
+wheel
 flask
 Flask-security
 Flask-login
@@ -21,7 +22,5 @@ blinker
 Click
 itsdangerous
 MarkupSafe
-mysql-connector-python
-mysql-connector-python-rf
-mysql-connector
 pyotp
+gunicorn
