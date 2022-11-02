@@ -64,10 +64,10 @@ def login():
     
 @auth.route('/login/2fa')
 def login_2fa():
-    global secret
-    # secret = pyotp.random_base32()
-    if secret is None:
-        secret = pyotp.random_base32()
+    #global secret
+    secret = pyotp.random_base32()
+    #if secret is None:
+#         secret = pyotp.random_base32()
     return render_template('login_2fa.html', secret=secret)
 
 # 2FA form route
