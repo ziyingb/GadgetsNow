@@ -4,7 +4,7 @@ pipeline {
 
 		stage('OWASP DependencyCheck') {
 			steps {
-				dependencyCheck additionalArguments: 'scan="https://github.com/ziyingb/GadgetsNow.git" --formatHTML --formatXML', odcInstallation: 'OWASP-Dependency-Check'
+				dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP'
 			}
 		}
 	}	
