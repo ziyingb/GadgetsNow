@@ -59,7 +59,7 @@ def product(productid):
                 cart_item.add()
             flask.flash('Product successfully added to cart.')
         else:
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
     product = ProductInformation.query.filter_by(id = productid).first()
     form = addToCart(request.form)
     return render_template('product.html', product = product, form = form)
