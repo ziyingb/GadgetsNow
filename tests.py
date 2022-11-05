@@ -16,10 +16,10 @@ class TestHello(unittest.TestCase):
  
     def test_register_login_submit(self): 
         #test signup 
-        rv = self.app.post('/register', data={ 
+        rv = self.app.post('/register', data= { 
             "username": "test", 
-            "password": "test", 
-            "email": "test@test.com" 
+            "email": "test@test.com",
+            "password": "test"
         }) 
         assert('{"status": "Registration successful"}' in rv.data.decode("utf-8")) 
  
