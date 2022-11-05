@@ -26,10 +26,10 @@ app.config["RECAPTCHA_PRIVATE_KEY"] = "6LcNId8iAAAAAHxvVbpteSlEv7-T5IUhYeZCQT6g"
 
 # Email Verification
 mail= Mail(app)
-app.config["MAIL_SERVER"]='smtp.gmail.com'
+app.config["MAIL_SERVER"]='smtp.fastmail.com'
 app.config["MAIL_PORT"] = 465
-app.config["MAIL_USERNAME"]='gadgetsnow3103s@gmail.com'
-app.config['MAIL_PASSWORD']='myndtyuzwnjllhrp' 
+app.config["MAIL_USERNAME"]='gadgetsnow3x03@fastmail.com'
+app.config['MAIL_PASSWORD']='rfgesgxwbz4uf878'
 app.config['MAIL_DEFAULT_SENDER'] = 'GadgetsNow'                 
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
