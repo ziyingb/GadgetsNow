@@ -1,6 +1,5 @@
 from os import name
 import unittest
-import flask
 from app import app
 import secrets
 
