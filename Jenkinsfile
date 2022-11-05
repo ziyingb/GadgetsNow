@@ -12,7 +12,7 @@ pipeline {
 			steps {
 				script {
 					 sh 'python3 -m venv venv' 
-					 sh 'pip install -r requirements.txt'
+					//  sh 'pip install -r requirements.txt'
 				}
 			}
 		}
