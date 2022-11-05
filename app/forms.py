@@ -12,21 +12,21 @@ class LoginForm(FlaskForm):
 	
 
 class RegisterForm(FlaskForm):
-	def validate_password(form, field):	
-		msg = ""
-		password = field.data
-		if len(password)<5 and len(password)>15:
-			msg = "Password denied: must be between 5 and 15 characters long."
-		elif re.search('[0-9]',password) is None:
-			msg = "Password denied: must contain a number between 0 and 9"
-		elif re.search('[A-Z]',password) is None:
-			msg = "Password denied: must contain a capital letter."
-		elif re.search('[a-z]',password) is None:
-			msg = "Password denied: must contain a lowercase letter."
-		elif re.search('[!@#$%&()\-_[\]{\};:"./<>?]', password) is None:
-			msg = "Password denied: must contain a special character"           
-		if msg != "":
-			raise ValidationError(msg)
+# 	def validate_password(form, field):	
+# 		msg = ""
+# 		password = field.data
+# 		if len(password)<5 and len(password)>15:
+# 			msg = "Password denied: must be between 5 and 15 characters long."
+# 		elif re.search('[0-9]',password) is None:
+# 			msg = "Password denied: must contain a number between 0 and 9"
+# 		elif re.search('[A-Z]',password) is None:
+# 			msg = "Password denied: must contain a capital letter."
+# 		elif re.search('[a-z]',password) is None:
+# 			msg = "Password denied: must contain a lowercase letter."
+# 		elif re.search('[!@#$%&()\-_[\]{\};:"./<>?]', password) is None:
+# 			msg = "Password denied: must contain a special character"           
+# 		if msg != "":
+# 			raise ValidationError(msg)
 			
 	recaptcha = RecaptchaField()
 	username = StringField  (u'Username' , validators=[DataRequired()])
