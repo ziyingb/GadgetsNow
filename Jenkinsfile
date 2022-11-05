@@ -12,6 +12,7 @@ pipeline {
 			steps {
 				script {
 					echo ('Building...')
+					 sh 'python tests.py' 
 				}
 			}
 		}
