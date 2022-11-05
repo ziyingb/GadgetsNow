@@ -8,11 +8,21 @@ pipeline {
 			}
 		}
 
-		stage('Build and Test') {
+		stage('Build') {
 			steps {
-				sh 'python tests.py'
+				sh '''
+				python -m venv venv
+				pip install -r requirements.txt
+				'''
 			}
 		}
+
+		stage ('Test')
+			steps {
+				script {
+					sh 'python3 tests.py'
+				}
+			}
 	}	
 	post {
 		success {
