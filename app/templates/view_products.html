@@ -1,18 +1,26 @@
 {% extends "base.html" %} 
-{% block title %}Checkout{% endblock %} 
+{% block title %}View Products{% endblock %} 
 {% block content %}
-<h1>View Products</h1>
 
-<div class="container">
-    {%for row in products %}
-    <div class="card" style="width: 18rem;">
-        <img src="{{row.url}}" class="card-img-top">
-        <div class="card-body">
-          <h5 class="card-title">{{row.name}}</h5>
-          <p class="card-text">{{row.desc}}</p>
-          <a href="#" class="btn btn-primary float-end">View more...</a>
-        </div>
+<!-- Page Content -->
+<div class="page-content"  style="height:fit-content">
+  <div id="page-title">View Products</div>
+  <hr/>
+  <div class="m-4">
+    <div class="container wrapper">
+      {% for row in products %}
+        <a href="/view_products/item/{{row.id}}" style="text-decoration:none;">
+          <div class="card" style="width: 13rem; height: 21rem; border-color:dimgray">
+            <img src="{{row.url}}" class="card-img-top cover" style="width: 12em; height: 12rem; margin-left:0.5rem; ">
+            <div class="card-body">
+              <h5 class="card-title" style="font-size: 0.8rem"> {{row.name}} </h5>
+              <p class="card-text" style="font-size: 0.8rem"> {{row.desc}} </p>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
     </div>
-    {% endfor %}
+  </div>
 </div>
+
 {% endblock %}
