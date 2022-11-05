@@ -343,7 +343,7 @@ def reset_password(token):
             password = request.form.get('password', '', type=str) 
             passwordCheck = request.form.get('passwordCheck', '', type=str) 
             if password != passwordCheck:
-                msg = "Passwords do not match! Please try again."
+                flash("Passwords do not match! Please try again.",'danger')
             else:
                 email = s.loads(token, salt = "reset_password", max_age=300)
                 user_by_email = User.query.filter_by(email=email).first()
@@ -351,6 +351,6 @@ def reset_password(token):
                 password = password + salt
                 pw_hash = bcrypt.generate_password_hash(password)
                 if user_by_email.changepassword(pw_hash, salt):
-                    msg = "Password has been reset. Click <a href='/login'>here</a> to login."
+                    flash("Password has been reset. Click <a href='/login'>here</a> to login.",'success')
     form = ResetPasswordForm(request.form)
     return render_template('reset_password.html', form = form, msg = msg)
