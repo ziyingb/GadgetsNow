@@ -189,7 +189,7 @@ def register():
                 msg = 'Error: User already exists!'
             else:
                 token = s.dumps(email, salt='verify_account')
-                message = Message('Confirm Email', sender='GadgetsNow3103@gmail.com', recipients = [email])
+                message = Message('Confirm Email', sender='gadgetsnow3x03@fastmail.com', recipients = [email])
                 link = url_for('auth.verify_account', token=token, external=True)
                 message.body = "Your verification link is gadgetsnow.tk".format(link) 
                 # Need to set to whatever URL
@@ -315,7 +315,7 @@ def forgetpassword():
                 
             if email != "":
                 token = s.dumps(email, salt='reset_password')
-                message = Message('Reset Password', sender='GadgetsNow3103@gmail.com', recipients = [email])
+                message = Message('Reset Password', sender='gadgetsnow3x03@fastmail.com', recipients = [email])
                 link = url_for('auth.reset_password', token=token, external=True)
                 message.body = "Your verification link is gadgetsnow.tk".format(link) 
                 # Need to set to whatever URL
