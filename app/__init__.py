@@ -20,8 +20,8 @@ app.config['MYSQL_PASSWORD'] = 'root'
 app.config['MYSQL_DB'] = 'gadgetsnow'
 
 # CAPTCHA
-app.config["RECAPTCHA_PUBLIC_KEY"] = "6Lcwf94iAAAAADjBmVbvE9GE95o6FAxFiVx2cZHm"
-app.config["RECAPTCHA_PRIVATE_KEY"] = "6Lcwf94iAAAAACU_2RY92W8FTJCQMfszmzuyZa8e"
+app.config["RECAPTCHA_PUBLIC_KEY"] = "6LcNId8iAAAAAMpyziUObM3gV49rh-0iTJvOa3uM"
+app.config["RECAPTCHA_PRIVATE_KEY"] = "6LcNId8iAAAAAHxvVbpteSlEv7-T5IUhYeZCQT6g"
 
 
 # Email Verification
