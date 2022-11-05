@@ -1,0 +1,37 @@
+{% extends "base.html" %} 
+{% block title %}View Products{% endblock %} 
+{% block content %}
+
+<!-- Page Content -->
+<div class="page-content"  style="height:fit-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <img src="{{product.url}}" class="card-img-top cover" style="width: 25em; height: 25rem;">
+            </div>
+            <div class="col-lg-6">
+                <h4>Product Description</h4>
+                <p>{{product.name}}</p>
+                <p>{{product.desc}}</p>
+                <p>{{product.category}}</p>
+                <p>{{product.price}}</p>
+                <form method="POST">
+                    <div class="form-floating mb-3">
+                        {{ form.quantity(class="form-control")}}
+                        <label for="floatingInput">Quantity</label>
+                    </div>
+                        {{ form.prod_id(class="form-control", value= product.id) }}
+                        {{ form.prod_price_stripe(class="form-control", value=product.price_stripe) }}
+                        {{ form.prod_price(class="form-control", value=product.price) }}
+                        {{ form.prod_url(class="form-control", value=product.url) }}
+                        {{ form.prod_name(class="form-control", value=product.name) }}
+                        {{ form.prod_category(class="form-control", value=product.category) }}
+                        
+                    <button class="w-100 btn btn-lg btn-primary" type="submit">Add to cart</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
