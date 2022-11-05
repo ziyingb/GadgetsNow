@@ -11,8 +11,8 @@ pipeline {
 		stage('Build') {
 			steps {
 				script {
-					echo ('Building...')
-					 sh 'python tests.py' 
+					 sh 'python -m venv venv' 
+					 sh 'pip install -r requirements.txt'
 				}
 			}
 		}
@@ -20,11 +20,8 @@ pipeline {
 		stage('Test') {
 			steps {
 				script {
-					echo 'Testing...'
+					 sh 'python tests.py' 
 				}
-			}
-			post {
-				always {junit 'test-reports/*.xml'}
 			}
 		}
 	}	
