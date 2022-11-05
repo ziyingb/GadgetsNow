@@ -189,7 +189,7 @@ def register():
                 token = s.dumps(email, salt='verify_account')
                 message = Message('Confirm Email', sender='GadgetsNow3103@gmail.com', recipients = [email])
                 link = url_for('auth.verify_account', token=token, external=True)
-                message.body = "Your verification link is 127.0.0.1:5000{}".format(link) 
+                message.body = "Your verification link is gadgetsnow.tk".format(link) 
                 # Need to set to whatever URL
                 mail.send(message)
                 salt = get_random_string()
@@ -315,7 +315,7 @@ def forgetpassword():
                 token = s.dumps(email, salt='reset_password')
                 message = Message('Reset Password', sender='GadgetsNow3103@gmail.com', recipients = [email])
                 link = url_for('auth.reset_password', token=token, external=True)
-                message.body = "Your verification link is 127.0.0.1:5000{}".format(link) 
+                message.body = "Your verification link is gadgetsnow.tk".format(link) 
                 # Need to set to whatever URL
                 mail.send(message)
                 msg="Please check your email to reset your password!"
