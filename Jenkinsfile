@@ -11,7 +11,7 @@ pipeline {
 		stage('Build') {
 			steps {
 				script {
-					 sh 'python -m venv venv' 
+					 sh 'python3 -m venv venv' 
 					 sh 'pip install -r requirements.txt'
 				}
 			}
@@ -20,7 +20,7 @@ pipeline {
 		stage('Test') {
 			steps {
 				script {
-					 sh 'python tests.py' 
+					 sh 'python3 tests.py' 
 				}
 			}
 		}
