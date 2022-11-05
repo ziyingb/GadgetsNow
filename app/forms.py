@@ -1,15 +1,33 @@
 from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import StringField, PasswordField, BooleanField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SelectField, IntegerField, HiddenField
 from wtforms.validators import DataRequired
 from .validators import *
+import re
 
 class LoginForm(FlaskForm):
 	recaptcha = RecaptchaField()
 	usernameoremail = StringField  (u'UsernameOrEmail' , validators=[DataRequired()])
 	password = PasswordField(u'Password' , validators=[DataRequired()])
 	remember_me = BooleanField()
+	
 
 class RegisterForm(FlaskForm):
+	# def validate_password(form, field):	
+	# 	msg = ""
+	# 	password = field.data
+	# 	if len(password)<5 and len(password)>15:
+	# 		msg = "Password denied: must be between 5 and 15 characters long."
+	# 	elif re.search('[0-9]',password) is None:
+	# 		msg = "Password denied: must contain a number between 0 and 9"
+	# 	elif re.search('[A-Z]',password) is None:
+	# 		msg = "Password denied: must contain a capital letter."
+	# 	elif re.search('[a-z]',password) is None:
+	# 		msg = "Password denied: must contain a lowercase letter."
+	# 	elif re.search('[!@#$%&()\-_[\]{\};:"./<>?]', password) is None:
+	# 		msg = "Password denied: must contain a special character"           
+	# 	if msg != "":
+	# 		raise ValidationError(msg)
+			
 	recaptcha = RecaptchaField()
 	username = StringField  (u'Username' , validators=[DataRequired()])
 	password = PasswordField(u'Password' , validators=[DataRequired()])
@@ -17,6 +35,7 @@ class RegisterForm(FlaskForm):
 
 class VerifyUser(FlaskForm):
 	otp_code = StringField  (u'Verification' , validators=[DataRequired()])
+
 
 class UpdateProfile(FlaskForm):
 	first_name = StringField(u'First Name')
@@ -27,3 +46,11 @@ class UpdateProfile(FlaskForm):
 	address = StringField(u'Address')
 	city = StringField(u'City')
 	postal_code = StringField(u'Postal Code')
+	
+class ForgetPasswordForm(FlaskForm):
+	recaptcha = RecaptchaField()
+	usernameoremail = StringField  (u'UsernameOrEmail' , validators=[DataRequired()])
+
+class ResetPasswordForm(FlaskForm):
+	password = PasswordField(u'Password' , validators=[DataRequired()])
+	passwordCheck = PasswordField(u'Password' , validators=[DataRequired()])

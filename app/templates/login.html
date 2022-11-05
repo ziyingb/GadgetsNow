@@ -1,5 +1,5 @@
 {% extends "base.html" %} 
-{% block title %}Sign Up{% endblock %} 
+{% block title %}Login{% endblock %} 
 {% block content %}
 <div class="col-md-6 mx-auto">
     <form method="post" action="" class="p-4 p-md-5 border rounded-3 bg-light">
@@ -30,7 +30,8 @@
         <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
         <hr class="my-4">
         <small class="text-muted">
-            Dont have an account? <a href="{{ url_for('auth.register')}}" class="text-right">Register</a>
+            Don't have an account? <a href="{{ url_for('auth.register')}}" class="text-right">Register</a>
+            </br><a href="{{ url_for('auth.forgetpassword')}}" class="text-right">Forget password?</a>
         </small>
     </form>
 </div>
