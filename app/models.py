@@ -1,34 +1,36 @@
+from datetime import datetime
 from app import sa
 from flask_login import UserMixin
 
 class User(sa.Model, UserMixin):
     __tablename__ = "user_tb"
-    id = sa.Column(sa.Integer, primary_key = True)
+    id = sa.Column(sa.Integer, primary_key = True, nullable= False, unique = True)
     username = sa.Column(sa.String(120), unique = True, nullable = False)
     email = sa.Column(sa.String(120), unique = True, nullable = False)
     password = sa.Column(sa.String(255), nullable = False)
     salt = sa.Column(sa.String(255), nullable = False)
-    verified = sa.Column(sa.Boolean, nullable = False)
+    is_active= sa.Column(sa.Integer, default=0)
     verified_dt = sa.Column(sa.DateTime, nullable = True)
 
-    def __init__(self,username, email, password, salt, verified, verified_dt):
+    def __init__(self, id, username, email, password, salt, is_active, verified_dt):
+        self.id = id
         self.username = username
         self.email = email
         self.password = password
         self.salt = salt
-        self.verified = verified
+        self.is_active = is_active
         self.verified_dt = verified_dt
 
-    def __init__(self, username, email, password, salt, verified):
+    def __init__(self, id, username, email, password, salt):
+        self.id = id
         self.username = username
         self.email = email
         self.password = password
         self.salt = salt
-        self.verified = verified
 
-    def set_verified(self, verified, verified_dt):
-        self.verified = verified
-        self.verified_dt = verified_dt
+    def set_verified(self):
+        self.is_active= 1
+        self.verified_dt = datetime.now()
         sa.session.commit()
         return self 
 
@@ -38,7 +40,7 @@ class User(sa.Model, UserMixin):
     def save(self):
         sa.session.add (self)
         sa.session.commit()
-        return self 
+        return self
 
 class UserInformation(sa.Model):
     __tablename__ = "user_info_tb"
@@ -57,3 +59,64 @@ class UserInformation(sa.Model):
     postal_code = sa.Column(sa.Integer)
     last_modified_dt = sa.Column(sa.DateTime)
 
+    def __init__(self, user_id, first_name, last_name, mobile_no, address, country, city, postal_code, last_modified_dt):
+        self.user_id = user_id
+        self.first_name = first_name
+        self.last_name = last_name
+        self.mobile_no = mobile_no
+        self.address = address
+        self.country = country
+        self.city = city
+        self.postal_code = postal_code
+        self.last_modified_dt = last_modified_dt
+        
+
+    def __init__(self, user_id, last_modified_dt):
+        self.user_id = user_id
+        self.last_modified_dt = last_modified_dt
+    
+    
+    def update_information(self, first_name, last_name, mobile_no, address, country, city, postal_code, last_modified_dt):
+        self.first_name= first_name
+        self.last_name = last_name
+        self.mobile_no = mobile_no
+        self.address = address
+        self.country = country
+        self.city = city
+        self.postal_code = postal_code
+        self.last_modified_dt = last_modified_dt
+        sa.session.commit()
+        return self 
+
+
+    def save(self):
+        sa.session.add (self)
+        sa.session.commit()
+        return self 
+
+class ProductInformation(sa.Model):
+    id = sa.Column(sa.Integer, primary_key = True)
+    name = sa.Column(sa.String(255))
+    desc = sa.Column(sa.String(255))
+    category = sa.Column(sa.String(120))
+    price = sa.Column(sa.Integer)
+    url = sa.Column(sa.String(1024))
+    price_stripe = sa.Column(sa.String(255))
+
+    def __init__(self, name, desc, category, price, url, price_stripe):
+        self.name = name
+        self.desc = desc
+        self.category = category
+        self.price = price
+        self.url = url
+        self.price_stripe = price_stripe
+
+    def save(self):
+        sa.session.add ( self )
+        sa.session.commit()
+        return True 
+
+    def add(self):
+        sa.session.add(self)
+        sa.session.commit()
+        return True

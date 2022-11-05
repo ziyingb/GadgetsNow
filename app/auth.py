@@ -1,5 +1,5 @@
 from re import S
-from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
+from flask import Blueprint, render_template, request, flash, redirect, url_for, abort, session
 from flask_login import login_user, logout_user, current_user, login_required
 from itsdangerous import BadTimeSignature, URLSafeTimedSerializer, SignatureExpired
 from app.models import User, UserInformation
@@ -26,6 +26,7 @@ def load_user(user_id):
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if not current_user.is_authenticated:
+        session['login_failure_count'] = 0
         # Declare the login form
         form = LoginForm(request.form)
         # Flask message injected into the page, in case of any errors
@@ -33,31 +34,40 @@ def login():
         if request.method == 'POST':
             # check if both http method is POST and form is valid on submit
             if form.validate_on_submit():
-                # assign form data to variables
-                usernameoremail = request.form.get('usernameoremail', '', type=str)
-                password = request.form.get('password', '', type=str) 
-                remember_me = request.form.get('remember_me', '', type=bool)
-                # filter User out of database through email
-                user_by_email = User.query.filter_by(email=usernameoremail).first()
-                user_by_username = User.query.filter_by(username=usernameoremail).first()
-                if user_by_username:
-                    password = password + user_by_username.salt
-                    if bcrypt.check_password_hash(user_by_username.password, password):
-                        login_user(user_by_username, remember_me)
-                        flask.flash('Logged in successfully. (Username)')
-                        return redirect(url_for('auth.login_2fa'))
-                    else:
-                        msg = "Invalid Credentials. Please try again!"
-                elif user_by_email:
-                    password = password + user_by_email.salt
-                    if bcrypt.check_password_hash(user_by_email.password, password):
-                        login_user(user_by_email)
-                        flask.flash('Logged in successfully. (Email)')
-                        return redirect(url_for('auth.login_2fa'))
-                    else:
-                        msg = "Invalid Credentials. Please try again!"
+                if session['login_failure_count'] >= 3:
+                    msg = "Too many failed attempts. Please try again after 30 minutes."
+                    return render_template( 'login.html', form=form, msg=msg )
                 else:
-                    msg = "Invalid Credentials. Please try again!"
+                    # assign form data to variables
+                    usernameoremail = request.form.get('usernameoremail', '', type=str)
+                    password = request.form.get('password', '', type=str) 
+                    remember_me = request.form.get('remember_me', '', type=bool)
+                    # filter User out of database through email
+                    user_by_email = User.query.filter_by(email=usernameoremail).first()
+                    user_by_username = User.query.filter_by(username=usernameoremail).first()
+                    if user_by_username:
+                        password = password + user_by_username.salt
+                        if bcrypt.check_password_hash(user_by_username.password, password):
+                            login_user(user_by_username, remember_me)
+                            session['login_failure_count'] = 0
+                            flask.flash('Logged in successfully. (Username)')
+                            return redirect(url_for('views.index'))
+                        else:
+                            session['login_failure_count'] += 1
+                            msg = "Invalid Credentials. Please try again!"
+                    elif user_by_email:
+                        password = password + user_by_email.salt
+                        if bcrypt.check_password_hash(user_by_email.password, password):
+                            login_user(user_by_email)
+                            session['login_failure_count'] = 0
+                            flask.flash('Logged in successfully. (Email)')
+                            return redirect(url_for('views.index'))
+                        else:
+                            session['login_failure_count'] += 1
+                            msg = "Invalid Credentials. Please try again!"
+                    else:
+                        session['login_failure_count'] += 1
+                        msg = "Invalid Credentials. Please try again!"
         return render_template( 'login.html', form=form, msg=msg )
     else:
         flask.flash('Please logout before proceeding.')
@@ -97,8 +107,14 @@ def verify_account(token):
         email = s.loads(token, salt = "verify_account", max_age=300)
         now = datetime.now()
         user_by_email = User.query.filter_by(email=email).first()
-        user_by_email.set_verified(1, now)
-        return render_template('verify_account_success.html')
+        if user_by_email.verified_dt == None:
+            user_by_email.set_verified()
+            ui = UserInformation(user_by_email.id, now)
+            ui.save()
+            msg = "Account has been successfully verified."
+        else:
+            msg = "Account is already verified."
+        return render_template('verify_account_success.html', msg = msg)
     except SignatureExpired:
         return render_template('verify_account_unsuccessful.html')
     except BadTimeSignature:
@@ -165,7 +181,37 @@ def register():
         flask.flash('Please logout before proceeding.')
         return redirect(url_for('views.index'))
         
-
+@auth.route('/personal_information', methods=['GET', 'POST'])
+def userInformation():
+    if current_user.is_authenticated:
+        # Assign form data to variables
+        id = session['_user_id']
+        # filter User out of database through username
+        userInfo = UserInformation.query.filter_by(user_id=id).first()
+        # declare the Registration Form
+        form = UpdateProfile(request.form)
+        msg     = None
+        success = False
+        if request.method == 'GET':
+            return render_template( 'user_information.html', form=form, msg=msg, success=success, userInfo = userInfo)
+        # check if both http method is POST and form is valid on submit
+        if form.validate_on_submit():
+            first_name = request.form.get('first_name', '', type=str)
+            last_name = request.form.get('last_name', '', type=str)
+            mobile_no = request.form.get('mobile_no', '', type=str)
+            country = request.form.get('country', '', type=str)
+            address = request.form.get('address', '', type=str)
+            city = request.form.get('city', '', type=str)
+            postal_code = request.form.get('postal_code', '', type=str)
+            last_modified_dt = datetime.now()
+            userInfo.update_information(first_name, last_name, mobile_no, address, country, city, postal_code, last_modified_dt)
+            msg = 'Profile updated successfully.'
+        else:
+            msg = 'Input error'
+        return render_template( 'user_information.html', form=form, msg=msg, success=success, userInfo = userInfo)
+    else:
+        flask.flash('Please login before proceeding.')
+        return redirect(url_for('auth.login'))
 
 @auth.route('/checkout', methods=['GET', 'POST'])
 def checkout():
@@ -186,6 +232,7 @@ def checkout():
 @app.route('/stripe_webhook', methods=['POST'])
 def stripe_webhook():
     print('WEBHOOK CALLED')
+
     if request.content_length > 1024 * 1024:
         print('REQUEST TOO BIG')
         abort(400)
@@ -193,6 +240,7 @@ def stripe_webhook():
     sig_header = request.environ.get('HTTP_STRIPE_SIGNATURE')
     endpoint_secret = 'YOUR_ENDPOINT_SECRET'
     event = None
+
     try:
         event = stripe.Webhook.construct_event(
             payload, sig_header, endpoint_secret
@@ -205,10 +253,12 @@ def stripe_webhook():
         # Invalid signature
         print('INVALID SIGNATURE')
         return {}, 400
+
     # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
         print(session)
         line_items = stripe.checkout.Session.list_line_items(session['id'], limit=1)
         print(line_items['data'][0]['description'])
+        
     return {}

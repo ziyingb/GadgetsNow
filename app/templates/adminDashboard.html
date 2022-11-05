@@ -1,0 +1,195 @@
+{% extends "base.html" %} 
+{% block title %}Admin Dashboard{% endblock %} 
+{% block content %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Admin Dashboard</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="jumbotron p-3" style="overflow-x:auto;">
+                        <h2>Product Management</h2>
+                        <br>
+                        <div class="p-4 p-md-4 border rounded-3 bg-light">
+                            <button class="btn" style="float: right;" data-bs-toggle="modal" data-bs-target="#modaladd"><i class="fa-solid fa-circle-plus fa-2xl"></i></button>
+                                
+                                <br>
+                                <select data-live-search="true" name="search_filter" id="search_filter" class="form-control">
+                                    <option value="">Select Option</option>;
+                                    <option value="1">Accessories</option>
+                                    <option value="2">Data Storage</option>
+                                    <option value="3">Networing Devices</option>
+                                    <option value="4">Monitors</option>
+                                    <option value="5">Headphone & Earphones</option>
+                                    <option value="6">Batteries</option>
+                                </select>
+
+                                <table class="styled-table">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Product</th>
+                                            <th>Category</th>
+                                            <th>Price</th>
+                                            <th>Stripe Price</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in products %}
+                                        <tr class="active-row">
+                                            <td>{{row.id}}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img
+                                                        src= {{row.url}}
+                                                        alt=""
+                                                        style="width: 90px;"
+                                                        class="rounded"
+                                                        />
+                                                    <div class="ms-2">
+                                                        <p class="fw-bold mb-1">{{row.name}}</p>
+                                                        <p class="text-muted mb-0">{{row.desc}}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{row.category}}</td>
+                                            <td>{{row.price}}</td>
+                                            <td>{{row.price_stripe}}</td>
+                                            
+                                            <td>
+                                                <a href="/update/{{row.id}}" data-bs-toggle="modal" data-bs-target="#modaledit{{row.id}}"><i id="iconedit" class="fa-solid fa-pencil"></i></a>
+                                                <a href="/delete/{{row.id}}" data-bs-toggle="modal" data-bs-target="#modaldelete{{row.id}}"><i class="fa-solid fa-trash-can"></i></a>
+                                            </td>
+                                        </tr>
+            
+                                        <!-- Modal Edit Product-->
+                                        <div id="modaledit{{row.id}}" class="modal fade" role="dialog">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h4 class="modal-title">Update Product Details</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="{{url_for('views.update')}}" method="POST">
+                                                            <div class="form-group">
+                                                                <input type="hidden" name="id" value="{{row.id}}">
+                                                                <label>Product Name:</label>
+                                                                <input type="text" class="form-control" name="name" value="{{row.name}}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Description:</label>
+                                                                <input type="text" class="form-control" name="description" value="{{row.desc}}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Category:</label>
+                                                                <input type="text" class="form-control" name="category" value="{{row.category}}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Price:</label>
+                                                                <input type="number" class="form-control" name="price" value="{{row.price}}" min="0" step="0.1">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Image URL:</label>
+                                                                <input type="text" class="form-control" name="url" value="{{row.url}}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Stripe:</label>
+                                                                <input type="text" class="form-control" name="url" value="{{row.price_stripe}}">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <button class="btn btn-primary" type="submit">Update Product</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="modaldelete{{row.id}}" class="modal fade" role="dialog">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h4 class="modal-title">Delete Confirmation</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="{{url_for('views.delete')}}" method="POST">
+                                                            <div class="form-group">
+                                                                <input type="hidden" name="id" value="{{row.id}}">
+                                                                <p>Are you sure you want to delete this product?</p>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <button class="btn btn-primary" type="submit">Delete Product</button>
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                        </div>
+                    </div>
+
+                    <!-- Modal Add Product -->
+                    <div id="modaladd" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Add Product</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{url_for('views.insert')}}" method="POST">
+                                        <div class="form-group">
+                                            <label>Product Name:</label>
+                                            <input type="text" class="form-control" name="name" required="1" autocomplete="off">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Description:</label>
+                                            <input type="text" class="form-control" name="desc" required="1" autocomplete="off">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Category:</label>
+                                            <input type="text" class="form-control" name="category" required="1" autocomplete="off">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Price:</label>
+                                            <input type="number" class="form-control" name="price" required="1" min="0" step="0.1" autocomplete="off">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Image URL:</label>
+                                            <input type="text" class="form-control" name="url" required="1" autocomplete="off">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Stripe:</label>
+                                            <input type="text" class="form-control" name="price_stripe" required="1" autocomplete="off">
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-primary" type="submit">Add Product</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %} 
+{% block title %}User Information{% endblock %} 
+{% block content %}
+<div class="col-md-10 mx-auto">
+
+    <form method="post" action="" class="p-4 p-md-5 border rounded-3 bg-light">
+
+        {{ form.hidden_tag() }}
+
+        <h2>Update Profile</h2>
+        <br />
+        <div class="form-floating mb-3">
+            {% if userInfo.first_name %}
+                {{ form.first_name(class="form-control", value = userInfo.first_name) }}
+            {% else %}
+                {{ form.first_name(class="form-control")}}
+            {% endif %}
+            <label for="floatingInput">First Name</label>
+        </div>
+        <div class="form-floating mb-3">
+            {% if userInfo.last_name %}
+                {{ form.last_name(class="form-control", value = userInfo.last_name) }}
+            {% else %}
+                {{ form.last_name(class="form-control")}}
+            {% endif %}
+            <label for="floatingInput">Last Name</label>
+        </div>
+        <div class="form-floating mb-3">
+            {% if userInfo.mobile_no %}
+                {{ form.mobile_no(class="form-control", value = userInfo.mobile_no) }}
+            {% else %}
+                {{ form.mobile_no(class="form-control")}}
+            {% endif %}
+            <label for="floatingInput">Mobile Number</label>
+        </div>
+        <div class="form-floating mb-3">
+            {% if userInfo.country %}
+                {{ form.country(class="form-control", value = userInfo.country) }}
+            {% else %}
+                {{ form.country(class="form-control")}}
+            {% endif %}
+            <label for="floatingInput">Country</label>
+        </div>
+        <div class="form-floating mb-3">
+            {% if userInfo.address %}
+                {{ form.address(class="form-control", value = userInfo.address) }}
+            {% else %}
+                {{ form.address(class="form-control")}}
+            {% endif %}
+            <label for="floatingInput">Address</label>
+        </div>
+        <div class="form-floating mb-3">
+            {% if userInfo.city %}
+                {{ form.city(class="form-control", value = userInfo.city) }}
+            {% else %}
+                {{ form.city(class="form-control")}}
+            {% endif %}
+            <label for="floatingInput">City</label>
+        </div>
+        <div class="form-floating mb-3">
+            {% if userInfo.postal_code %}
+                {{ form.postal_code(class="form-control", value = userInfo.postal_code) }}
+            {% else %}
+                {{ form.postal_code(class="form-control")}}
+            {% endif %}
+            <label for="floatingInput">Postal Code</label>
+        </div>
+
+        <p class="fw-bold">
+            {% if msg %}
+                {{ msg | safe }}
+            {% endif %}                                  
+        </p>
+        <br />
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign Up</button>
+        <hr class="my-4">
+        <small class="text-muted">
+            Already have an account? <a href="{{ url_for('auth.login') }}" class="text-right">Login</a>
+        </small>
+    </form>
+</div>
+{% endblock %}

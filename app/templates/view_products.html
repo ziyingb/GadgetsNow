@@ -1,0 +1,18 @@
+{% extends "base.html" %} 
+{% block title %}Checkout{% endblock %} 
+{% block content %}
+<h1>View Products</h1>
+
+<div class="container">
+    {%for row in products %}
+    <div class="card" style="width: 18rem;">
+        <img src="{{row.url}}" class="card-img-top">
+        <div class="card-body">
+          <h5 class="card-title">{{row.name}}</h5>
+          <p class="card-text">{{row.desc}}</p>
+          <a href="#" class="btn btn-primary float-end">View more...</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
