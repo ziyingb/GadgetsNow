@@ -54,7 +54,6 @@ def login():
                             login_user(user_by_username, remember_me)
                             session['login_failure_count'] = 0
                             flask.flash('Logged in successfully. (Username)')
-#                             return redirect(url_for('views.index'))
                             return redirect(url_for('auth.login_2fa'))
                         else:
                             session['login_failure_count'] += 1
@@ -65,7 +64,6 @@ def login():
                             login_user(user_by_email)
                             session['login_failure_count'] = 0
                             flask.flash('Logged in successfully. (Email)')
-#                             return redirect(url_for('views.index'))
                             return redirect(url_for('auth.login_2fa'))
                         else:
                             session['login_failure_count'] += 1
@@ -186,12 +184,20 @@ def register():
             # filter User out of database through username
             user_by_email = User.query.filter_by(email=email).first()
             if user or user_by_email:
-                msg = 'Error: User already exists!'
+                 flash('Error: User already exists!','danger')
+            elif len(password) < 10:
+                flash('Password must be at least 10 characters.','danger')
+            elif re.search('[0-9]',password) is None:
+                flash('Make sure your password has a number in it','danger')
+            elif re.search('[A-Z]',password) is None: 
+                flash('Make sure your password has a capital letter in it','danger')
+            elif re.search('[^a-zA-Z0-9]',password) is None: 
+                flash('Make sure your password has a special character in it','danger')
             else:
                 token = s.dumps(email, salt='verify_account')
                 message = Message('Confirm Email', sender='gadgetsnow3x03@fastmail.com', recipients = [email])
                 link = url_for('auth.verify_account', token=token, external=True)
-                message.body = "Your verification link is gadgetsnow.tk".format(link) 
+                message.body = "Your verification link is https://www.gadgetsnow.tk{}".format(link) 
                 # Need to set to whatever URL
                 mail.send(message)
                 salt = get_random_string()
@@ -203,7 +209,7 @@ def register():
                     if not tuser:
                         user = User(temp_id, username, email, pw_hash, salt)
                         user.save()
-                        msg = 'User created! Please check your email to verify the account.'     
+                        flash('User created! Please check your email to verify the account.','success')     
                         success = True
                         break
         else:
@@ -238,7 +244,7 @@ def userInformation():
             postal_code = request.form.get('postal_code', '', type=str)
             last_modified_dt = datetime.now()
             userInfo.update_information(first_name, last_name, mobile_no, address, country, city, postal_code, last_modified_dt)
-            msg = 'Profile updated successfully.'
+            flash('Profile updated successfully.','success')
         else:
             msg = 'Input error'
         return render_template( 'user_information.html', form=form, msg=msg, success=success, userInfo = userInfo)
@@ -317,12 +323,12 @@ def forgetpassword():
                 token = s.dumps(email, salt='reset_password')
                 message = Message('Reset Password', sender='gadgetsnow3x03@fastmail.com', recipients = [email])
                 link = url_for('auth.reset_password', token=token, external=True)
-                message.body = "Your verification link is gadgetsnow.tk".format(link) 
+                message.body = "Your verification link is https://www.gadgetsnow.tk{}".format(link) 
                 # Need to set to whatever URL
                 mail.send(message)
-                msg="Please check your email to reset your password!"
+                flash("Please check your email to reset your password!",'warning')
             else:
-                msg = "This email or username does not exist!"
+                flash("This email or username does not exist!",'danger')
         form = ForgetPasswordForm(request.form)
         return render_template('forgetpassword.html', form=form, msg = msg)
     else:
