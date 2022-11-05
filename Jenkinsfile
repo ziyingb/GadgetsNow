@@ -13,7 +13,7 @@ pipeline {
 				sh 'echo "building the repo"'
 				sh 'python3 -m venv venv'
 				sh '. venv/bin/activate'
-				sh 'apt-get install libmysqlclient-dev'
+// 				sh 'apt-get install libmysqlclient-dev'
 				sh 'pip install -r requirements.txt'
 				
 			}
