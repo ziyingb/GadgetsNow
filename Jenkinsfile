@@ -7,6 +7,14 @@ pipeline {
 				dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'OWASP-Dependency-Check'
 			}
 		}
+
+		stage('Build and Test') {
+			steps {
+				sh 'chmod +x gunicorn_starter.sh'
+				sh 'pip install -r requirements.txt'
+				sh 'python tests.py'
+			}
+		}
 	}	
 	post {
 		success {
