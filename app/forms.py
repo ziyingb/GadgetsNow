@@ -33,6 +33,7 @@ class RegisterForm(FlaskForm):
 	password = PasswordField(u'Password' , validators=[DataRequired()])
 	email = StringField  (u'Email' , validators=[DataRequired(), Email()])
 
+
 class VerifyUser(FlaskForm):
 	otp_code = StringField  (u'Verification' , validators=[DataRequired()])
 
@@ -46,7 +47,34 @@ class UpdateProfile(FlaskForm):
 	address = StringField(u'Address')
 	city = StringField(u'City')
 	postal_code = StringField(u'Postal Code')
+
+
+class addToCart(FlaskForm):
+	def quantity_range(form, field):
+		quantity = field.data
+		msg = ""
+		if quantity >999 or quantity<1:
+			msg = "Invalid quantity. Please try again"
+			raise ValidationError(msg)
+	quantity = IntegerField(u'Quantity', validators=[quantity_range], default = 1)
+	prod_id = HiddenField(u'Product ID')
+	prod_name = HiddenField(u'Product Name')
+	prod_category = HiddenField(u'Product Category')
+	prod_price_stripe = HiddenField(u'Product Price Stripe')
+	prod_price = HiddenField(u'Product Price')
+	prod_url = HiddenField(u'Product URL')
 	
+
+class updateProdDetail(FlaskForm):
+	prod_id = HiddenField(u'Product ID')
+	prod_name = StringField(u'Product Name')
+	prod_desc = StringField(u'Product Description')
+	prod_category = StringField(u'Product Category')
+	prod_price = StringField(u'Product Price')
+	prod_url = StringField(u'Product URL')
+	prod_stripe = StringField(u'Product Stripe')
+
+
 class ForgetPasswordForm(FlaskForm):
 	recaptcha = RecaptchaField()
 	usernameoremail = StringField  (u'UsernameOrEmail' , validators=[DataRequired()])

@@ -2,7 +2,7 @@ from re import S
 from flask import Blueprint, render_template, request, flash, redirect, url_for, abort, session
 from flask_login import login_user, logout_user, current_user, login_required
 from itsdangerous import BadTimeSignature, URLSafeTimedSerializer, SignatureExpired
-from app.models import User, UserInformation
+from app.models import User, UserInformation, ShoppingCart
 from app import app, lm, bcrypt, mail
 from flask_mail import Message
 from app.src.utility import *
@@ -128,6 +128,33 @@ def verify_account(token):
         return render_template('verify_account_unsuccessful.html')
 
 
+@auth.route('/shopping_cart', methods = ['GET', 'POST'])
+def cart():
+    if current_user.is_authenticated:
+        if request.method == 'POST':
+            if 'prod_id' in request.form:
+                uid = session['_id']
+                prod_id = request.form['prod_id']
+                print(uid, prod_id)
+                cart_item = ShoppingCart.query.filter_by(uid = uid, prod_id = prod_id).first()
+                cart_item.delete()
+        products = ShoppingCart.query.filter_by(uid = session['_id']).all()
+        line_items = []
+        for item in products:
+            tempdict = {'price' : item.prod_price_stripe,
+                        'quantity' : item.quantity}
+            line_items.append(tempdict)
+        stripe.api_key = app.config['STRIPE_SECRET_KEY']
+        ss = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items = line_items,
+        mode='payment',
+        success_url = url_for('views.success', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url = url_for('views.unsuccessful', _external=True),
+        )
+        return render_template('shopping_cart.html', checkout_session_id=ss['id'],checkout_public_key=app.config['STRIPE_PUBLIC_KEY'], products = products)
+    else:
+        return redirect(url_for('auth.login'))
 
 
 @auth.route('/logout')

@@ -1,8 +1,10 @@
-from app.models import ProductInformation
-from app.models import User
+from app.models import ProductInformation, ShoppingCart
 from app import sa
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, session, render_template, request, redirect, url_for, flash
+import flask
 import csv
+from app.forms import *
+
 
 
 views = Blueprint('views', __name__)
@@ -32,9 +34,35 @@ def success():
 
 
 @views.route('/view_products/<category>')
-def product(category):
+def view_products(category):
     products = ProductInformation.query.filter_by(category = category).all()
     return render_template('view_products.html', products = products)
+
+
+@views.route('/view_products/item/<productid>', methods = ['POST', 'GET'])
+def product(productid):
+    if request.method == 'POST':
+        if '_id' in  session:
+            uid = session['_id']
+            prod_id = productid
+            prod_price_stripe = request.form.get('prod_price_stripe', '', type=str)
+            prod_price = request.form.get('prod_price', '', type=str)
+            prod_quantity = request.form.get('quantity', '', type=int)
+            prod_url = request.form.get('prod_url', '', type=str)
+            prod_name = request.form.get('prod_name', '', type=str)
+            prod_category = request.form.get('prod_category', '', type=str)
+            checkIfExist = ShoppingCart.query.filter_by(uid = uid, prod_id = prod_id).first()
+            if checkIfExist:
+                checkIfExist.add_quantity(prod_quantity)
+            else:
+                cart_item = ShoppingCart(uid, prod_quantity, prod_id, prod_name, prod_category, prod_price, prod_price_stripe, prod_url)
+                cart_item.add()
+            flask.flash('Product successfully added to cart.')
+        else:
+            return redirect(url_for('login'))
+    product = ProductInformation.query.filter_by(id = productid).first()
+    form = addToCart(request.form)
+    return render_template('product.html', product = product, form = form)
 
 
 @views.route('/unsuccessful')
@@ -44,9 +72,12 @@ def unsuccessful():
 
 @views.route('/adminDashboard')
 def adminDashboard():
-    product_data = ProductInformation.query.all()
-
-    return render_template('adminDashboard.html', products = product_data)
+    if 'priviledge' in session:
+        if session['priviledge'] == 'admin':
+            product_data = ProductInformation.query.all()
+            return render_template('adminDashboard.html', products = product_data)
+    session.clear()
+    return redirect(url_for('auth.login'))
 
 
 @views.route('/insert', methods= ['POST'])
@@ -85,6 +116,8 @@ def update():
         return redirect (url_for('views.adminDashboard'))
 
 
+
+
 @views.route('/delete', methods = ['GET', 'POST'])
 def delete():
     if request.method == 'POST':
@@ -92,3 +125,4 @@ def delete():
         product_info.delete()
         flash("Product Deleted Successfully")
         return redirect (url_for('views.adminDashboard'))
+

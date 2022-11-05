@@ -1,0 +1,93 @@
+{% extends "base.html" %} 
+{% block title %}Admin Dashboard{% endblock %} 
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="jumbotron p-3" style="overflow-x:auto;">
+                    <h2>Shopping Cart</h2>
+                    <div class="p-4 p-md-4 border rounded-3 bg-light text-right">
+                        <table class="styled-table">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th></th>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Price Per</th>
+                                    <th>Quantity</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if not products %}
+                                <tr class="active-row">
+                                    <td></td>
+                                    <td></td>
+                                    <td style="padding-left:12rem;">Shopping cart is empty</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                {% endif %}
+
+                                {% for row in products %}
+                                    <tr class="active-row">
+                                        <td><img src="{{row.prod_url}}" class="card-img-top cover" style="width: 6em; height: 6rem;"></td>
+                                        <td>{{row.prod_name}}</td>
+                                        <td>{{row.prod_category}}</td>
+                                        <td>{{row.prod_price}}</td>
+                                        <td>{{row.quantity}}</td>
+                                        <td>
+                                            <!-- <a href="/delete/{{row.id}}" class="fa-solid fa-trash-can" onclick="return confirm('Are you sure you want to delete this item?')"></a> -->
+                                            <a href="/delete_cart/{{row.prod_id}}" data-bs-toggle="modal" data-bs-target="#modaldelete{{row.prod_id}}"><i class="fa-solid fa-trash-can"></i></a>
+                                        </td>
+                                    </tr>
+
+                                    <div id="modaldelete{{row.prod_id}}" class="modal fade" role="dialog">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">Delete Confirmation</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST">
+                                                        <div class="form-group">
+                                                            <input type="hidden" name="prod_id" value="{{row.prod_id}}">
+                                                            <p>Are you sure you want to delete this product?</p>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <button class="btn btn-primary" type="submit">Delete Product</button>
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-right">
+                        <a href="#" id="buy_now_btn" style="float:right; margin-top:10px;" class="btn btn-primary">Checkout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    {% endblock %}
+    {% block javascripts %}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const checkout_public_key = '{{checkout_public_key}}';
+        const checkout_session_id = '{{checkout_session_id}}'; 
+    </script> 
+    <script src="{{ url_for('static', filename='js/script-no-ajax.js')}}"></script>
+    {% endblock javascripts %}

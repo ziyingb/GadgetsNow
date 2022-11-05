@@ -1,4 +1,3 @@
-wheel
 flask
 Flask-security
 Flask-login
@@ -14,7 +13,6 @@ python-decouple
 email_validator
 flask_bcrypt
 flask_sqlalchemy
-flask_mysqldb
 sqlalchemy
 flask_migrate
 pyopenssl
