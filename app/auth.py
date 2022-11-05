@@ -10,7 +10,7 @@ from .forms import *
 from datetime import datetime
 import flask
 import stripe
-
+import pyotp
 
 auth = Blueprint('auth', __name__)
 s = URLSafeTimedSerializer('GadgetsNow3103TimedSerializer!')
@@ -54,7 +54,8 @@ def login():
                             login_user(user_by_username, remember_me)
                             session['login_failure_count'] = 0
                             flask.flash('Logged in successfully. (Username)')
-                            return redirect(url_for('views.index'))
+#                             return redirect(url_for('views.index'))
+                            return redirect(url_for('auth.login_2fa'))
                         else:
                             session['login_failure_count'] += 1
                             msg = "Invalid Credentials. Please try again!"
@@ -64,7 +65,8 @@ def login():
                             login_user(user_by_email)
                             session['login_failure_count'] = 0
                             flask.flash('Logged in successfully. (Email)')
-                            return redirect(url_for('views.index'))
+#                             return redirect(url_for('views.index'))
+                            return redirect(url_for('auth.login_2fa'))
                         else:
                             session['login_failure_count'] += 1
                             msg = "Invalid Credentials. Please try again!"
