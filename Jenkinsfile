@@ -10,10 +10,7 @@ pipeline {
 
 		stage('Build') {
 			steps {
-				script {
-					 sh 'python3 -m venv venv' 
-					//  sh 'pip install -r requirements.txt'
-				}
+				sh 'echo "building the repo"'
 			}
 		}
 
