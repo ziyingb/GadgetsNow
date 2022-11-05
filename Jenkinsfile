@@ -11,6 +11,7 @@ pipeline {
 		stage('Build') {
 			steps {
 				sh 'echo "building the repo"'
+				sh 'python3 -m venv venv'
 			}
 		}
 
