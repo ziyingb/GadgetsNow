@@ -12,10 +12,6 @@ pipeline {
 			steps {
 				script {
 					echo ('Building...')
-					sh '''
-					python -m venv venv
-					pip install -r requirement.txt
-					'''
 				}
 			}
 		}
