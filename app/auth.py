@@ -14,8 +14,8 @@ import stripe
 
 auth = Blueprint('auth', __name__)
 s = URLSafeTimedSerializer('GadgetsNow3103TimedSerializer!')
-uid_private_key = '$2a$12$CPGmq7LJ2a3SNfK7Uhv7Fe1ZOdEi4p5PofGdE9tIQX30Pe2wAZAeG' #UserID GadgetsNow 
-password_private_key = '$2a$12$CPGmq7LJ2a3SNfK7Uhv7Fe1ZOdEi4p5PofGdE9tIQX30Pe2wAZAeG' #Password: Gadgetsnow3103!
+uid_private_key = '$2a$12$CPGmq7LJ2a3SNfK7Uhv7Fe1ZOdEi4p5PofGdE9tIQX30Pe2wAZAeG'  
+password_private_key = '$2a$12$CPGmq7LJ2a3SNfK7Uhv7Fe1ZOdEi4p5PofGdE9tIQX30Pe2wAZAeG'
 
 # provide login manager with load_user callback
 @lm.user_loader
