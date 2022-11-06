@@ -37,13 +37,13 @@ class TestHello(unittest.TestCase):
         }) 
         assert('{"status": "Username taken"}' in rv.data.decode("utf-8"))
 
+        # user account logout 
+        rv = self.app.get('/logout', follow_redirects=True) 
+        assert('<input class="login-input input' in rv.data.decode("utf-8"))\
+        
         # home page 
         rv = self.app.get('/', follow_redirects=True) 
         assert('<td>10</td>\n' in rv.data.decode("utf-8")) 
-
-        # user account logout 
-        rv = self.app.get('/logout', follow_redirects=True) 
-        assert('<input class="login-input input' in rv.data.decode("utf-8"))
 
 if name == '__main__': 
     unittest.main()
