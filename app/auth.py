@@ -155,7 +155,7 @@ def cart():
             )
             return render_template('shopping_cart.html', checkout_session_id=ss['id'],checkout_public_key=app.config['STRIPE_PUBLIC_KEY'], products = products)
         else:
-            return render_template('shopping_cart', products = products)
+            return render_template('shopping_cart.html', products = products)
     else:
         return redirect(url_for('auth.login'))
 
