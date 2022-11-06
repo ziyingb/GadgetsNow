@@ -76,53 +76,69 @@ def adminDashboard():
         if session['priviledge'] == 'admin':
             product_data = ProductInformation.query.all()
             return render_template('adminDashboard.html', products = product_data)
-    session.clear()
     return redirect(url_for('auth.login'))
 
 
 @views.route('/insert', methods= ['POST'])
 def insert():
-    if request.method == 'POST':
-        name = request.form['name']
-        desc = request.form['desc']
-        category = request.form['category']
-        price = request.form['price']
-        url = request.form['url']
-        price_stripe = request.form['price_stripe']
+    if 'priviledge' in session:
+        if session['priviledge'] == 'admin':
+            if request.method == 'POST':
+                name = request.form['name']
+                desc = request.form['desc']
+                category = request.form['category']
+                price = request.form['price']
+                url = request.form['url']
+                price_stripe = request.form['price_stripe']
 
-        product_info = ProductInformation(name, desc, category, price, url, price_stripe)
-        sa.session.add(product_info)
-        sa.session.commit()
+                product_info = ProductInformation(name, desc, category, price, url, price_stripe)
+                sa.session.add(product_info)
+                sa.session.commit()
 
-        flash("Product Added Successfully")
+                flash("Product Added Successfully")
 
-        return redirect (url_for('views.adminDashboard'))
-
+                return redirect (url_for('views.adminDashboard'))
+        else:
+            return redirect(url_for('auth.login'))
+    else:
+        return redirect(url_for('auth.login'))
 
 @views.route('/update', methods= ['GET', 'POST'])
 def update():
-    if request.method == 'POST':
-        product_info = ProductInformation.query.get(request.form.get('id'))
-        product_info.name = request.form.get('name')
-        product_info.desc = request.form.get('desc')
-        product_info.category = request.form.get('category')
-        product_info.price = request.form.get('price')
-        product_info.url = request.form.get('url')
-        product_info.price_stripe = request.form.get('price_stripe')
-        product_info.save()
-        
-        flash("Product Updated Successfully")
+    if 'priviledge' in session:
+        if session['priviledge'] == 'admin':
+            if request.method == 'POST':
+                product_info = ProductInformation.query.get(request.form.get('id'))
+                product_info.name = request.form.get('name')
+                product_info.desc = request.form.get('desc')
+                product_info.category = request.form.get('category')
+                product_info.price = request.form.get('price')
+                product_info.url = request.form.get('url')
+                product_info.price_stripe = request.form.get('price_stripe')
+                product_info.save()
+                
+                flash("Product Updated Successfully")
 
-        return redirect (url_for('views.adminDashboard'))
-
+                return redirect (url_for('views.adminDashboard'))
+                
+        else:
+            return redirect(url_for('auth.login'))
+    else:
+        return redirect(url_for('auth.login'))
 
 
 
 @views.route('/delete', methods = ['GET', 'POST'])
 def delete():
-    if request.method == 'POST':
-        product_info = ProductInformation.query.get(request.form.get('id'))
-        product_info.delete()
-        flash("Product Deleted Successfully")
-        return redirect (url_for('views.adminDashboard'))
+    if 'priviledge' in session:
+        if session['priviledge'] == 'admin':
+            if request.method == 'POST':
+                product_info = ProductInformation.query.get(request.form.get('id'))
+                product_info.delete()
+                flash("Product Deleted Successfully")
+                return redirect (url_for('views.adminDashboard'))
+        else:
+            return redirect(url_for('auth.login'))
+    else:
+        return redirect(url_for('auth.login'))
 
