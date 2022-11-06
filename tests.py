@@ -14,8 +14,8 @@ class TestHello(unittest.TestCase):
         rv = self.app.get('/') 
         self.assertEqual(rv.status, '200 OK') 
  
-    def test_register_login_submit(self): 
-        #test register 
+    def test_register(self): 
+        # user register 
         rv = self.app.post('/register', data={ 
             "username": "test",
             "email": "test@test.com" ,
@@ -24,18 +24,26 @@ class TestHello(unittest.TestCase):
         assert('{"status": "Register successful"}' in rv.data.decode("utf-8")) 
 
     def test_register_username_taken(self): 
-        #test register username_taken 
+        # user register username taken 
         rv = self.app.post('/register', data={ 
-            "username": "test", 
-            "password": "test", 
-            "email": "test@test.com" 
+            "username": "test",
+            "email": "test@test.com", 
+            "password": "test"
         }) 
         rv = self.app.post('/register', data={ 
-            "username": "test", 
-            "password": "test", 
-            "email": "test@test.com" 
+            "username": "test",
+            "email": "test@test.com",
+            "password": "test"
         }) 
-        assert('{"status": "Username taken"}' in rv.data.decode("utf-8")) 
+        assert('{"status": "Username taken"}' in rv.data.decode("utf-8"))
+
+        # home page 
+        rv = self.app.get('/', follow_redirects=True) 
+        assert('<td>10</td>\n' in rv.data.decode("utf-8")) 
+
+        # user account logout 
+        rv = self.app.get('/logout', follow_redirects=True) 
+        assert('<input class="login-input input' in rv.data.decode("utf-8"))
 
 if name == '__main__': 
     unittest.main()
