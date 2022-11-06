@@ -337,3 +337,13 @@ def reset_password(token):
                     flash("Password has been reset. Click <a href='/login'>here</a> to login.",'success')
     form = ResetPasswordForm(request.form)
     return render_template('reset_password.html', form = form, msg = msg)
+
+# Use special @app.errorhandler() decorator for 404 errors.
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
+
+# This one relates to app.route 500 below
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('500.html'), 500
