@@ -12,10 +12,11 @@ import flask
 import stripe
 import pyotp
 
+
 auth = Blueprint('auth', __name__)
 s = URLSafeTimedSerializer('GadgetsNow3103TimedSerializer!')
-uid_private_key = '$2a$12$nimtZBhjl.7PTRdnoQ/viOWz200MV9eYAIp.OAb71MpR7rygDVZt6'  
-password_private_key = '$2a$12$6uFb4m9raet4ofAgIIrQmuXVF7NTlKiXNHydqi/B5YjhllBlYHghC'
+uid_private_key = '$2a$12$nimtZBhjl.7PTRdnoQ/viOWz200MV9eYAIp.OAb71MpR7rygDVZt6' #UserID GadgetsNow 
+password_private_key = '$2a$12$6uFb4m9raet4ofAgIIrQmuXVF7NTlKiXNHydqi/B5YjhllBlYHghC' #Password: Gadgetsnow3103!
 
 # provide login manager with load_user callback
 @lm.user_loader
@@ -51,20 +52,26 @@ def login():
                     if user_by_username:
                         password = password + user_by_username.salt
                         if bcrypt.check_password_hash(user_by_username.password, password):
-                            login_user(user_by_username, remember_me)
+                            session['user_tobevalidated'] = usernameoremail
+                            session['remember_me_input'] = remember_me
+                            # login_user(user_by_username, remember_me)
                             session['login_failure_count'] = 0
-                            flash('Correct credentials')
-                            return redirect(url_for('auth.login_2fa'))
+                            # flask.flash('Logged in successfully. (Username)')
+                            # return redirect(url_for('auth.login_2fa'))
+                            return redirect(url_for('views.index'))
                         else:
                             session['login_failure_count'] += 1
                             msg = "Invalid Credentials. Please try again!"
                     elif user_by_email:
                         password = password + user_by_email.salt
                         if bcrypt.check_password_hash(user_by_email.password, password):
-                            login_user(user_by_email)
+                            session['user_tobevalidated'] = usernameoremail
+                            session['remember_me_input'] = remember_me
+                            # login_user(user_by_email, remember_me)
                             session['login_failure_count'] = 0
-                            flash('Correct credentials')
-                            return redirect(url_for('auth.login_2fa'))
+                            # flask.flash('Logged in successfully. (Email)')
+                            # return redirect(url_for('auth.login_2fa'))
+                            return redirect(url_for('views.index'))
                         else:
                             session['login_failure_count'] += 1
                             msg = "Invalid Credentials. Please try again!"
@@ -88,6 +95,7 @@ def login_2fa():
 
 
 # 2FA form route
+# 2FA form route
 @auth.route('/login/2fa', methods=["POST"])
 def login_2fa_form():
 
@@ -106,7 +114,6 @@ def login_2fa_form():
         # inform users if OTP is invalid
         flash("You have supplied an invalid 2FA token!","danger")
         return redirect(url_for('auth.login_2fa'))
-
 
 @auth.route('/verify_account/<token>')
 def verify_account(token):
@@ -187,7 +194,7 @@ def register():
             # filter User out of database through username
             user_by_email = User.query.filter_by(email=email).first()
             if user or user_by_email:
-                 flash('Error: User already exists!','danger')
+                flash('Error: User already exists!','danger')
             elif len(password) < 10:
                 flash('Password must be at least 10 characters.','danger')
             elif re.search('[0-9]',password) is None:
@@ -212,7 +219,7 @@ def register():
                     if not tuser:
                         user = User(temp_id, username, email, pw_hash, salt)
                         user.save()
-                        flash('User created! Please check your email to verify the account.','success')     
+                        flash('User created! Please check your email to verify the account.','success')    
                         success = True
                         break
         else:
@@ -254,6 +261,23 @@ def userInformation():
     else:
         flask.flash('Please login before proceeding.')
         return redirect(url_for('auth.login'))
+
+
+# @auth.route('/checkout', methods=['GET', 'POST'])
+# def checkout():
+#     stripe.api_key = app.config['STRIPE_SECRET_KEY']
+#     session = stripe.checkout.Session.create(
+#         payment_method_types=['card'],
+#         line_items = [{
+#             'price': 'price_1LufGYH9RvLfX3o6QqrFdeyi',
+#             'quantity': 5,
+#         }],
+#         mode='payment',
+#         success_url = url_for('views.success', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
+#         cancel_url = url_for('views.unsuccessful', _external=True),
+#     )
+#     return render_template('checkout.html', checkout_session_id=session['id'],checkout_public_key=app.config['STRIPE_PUBLIC_KEY'])
+
 
 @app.route('/stripe_webhook', methods=['POST'])
 def stripe_webhook():
@@ -329,7 +353,7 @@ def reset_password(token):
             password = request.form.get('password', '', type=str) 
             passwordCheck = request.form.get('passwordCheck', '', type=str) 
             if password != passwordCheck:
-                flash("Passwords do not match! Please try again.",'danger')
+                msg = "Passwords do not match! Please try again."
             else:
                 email = s.loads(token, salt = "reset_password", max_age=300)
                 user_by_email = User.query.filter_by(email=email).first()
@@ -337,7 +361,7 @@ def reset_password(token):
                 password = password + salt
                 pw_hash = bcrypt.generate_password_hash(password)
                 if user_by_email.changepassword(pw_hash, salt):
-                    flash("Password has been reset. Click <a href='/login'>here</a> to login.",'success')
+                    msg = "Password has been reset. Click <a href='/login'>here</a> to login."
     form = ResetPasswordForm(request.form)
     return render_template('reset_password.html', form = form, msg = msg)
 
