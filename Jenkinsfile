@@ -8,7 +8,8 @@ pipeline {
 				sh 'python3 -m venv venv'
 				sh '. venv/bin/activate'
 				sh 'pip install -r requirements.txt'
-				
+				git branch: 'main', url: 'https://github.com/ziyingb/GadgetsNow.git'
+				bat 'python tests.py'
 			}
 		}
 
@@ -21,6 +22,7 @@ pipeline {
 		stage('Test') {
 			steps {
 				script {
+					 sh 'Testing..'
 					 sh 'python3 tests.py' 
 				}
 			}
