@@ -14,8 +14,8 @@ import pyotp
 
 auth = Blueprint('auth', __name__)
 s = URLSafeTimedSerializer('GadgetsNow3103TimedSerializer!')
-uid_private_key = '$2a$12$CPGmq7LJ2a3SNfK7Uhv7Fe1ZOdEi4p5PofGdE9tIQX30Pe2wAZAeG'  
-password_private_key = '$2a$12$CPGmq7LJ2a3SNfK7Uhv7Fe1ZOdEi4p5PofGdE9tIQX30Pe2wAZAeG'
+uid_private_key = '$2a$12$nimtZBhjl.7PTRdnoQ/viOWz200MV9eYAIp.OAb71MpR7rygDVZt6'  
+password_private_key = '$2a$12$6uFb4m9raet4ofAgIIrQmuXVF7NTlKiXNHydqi/B5YjhllBlYHghC'
 
 # provide login manager with load_user callback
 @lm.user_loader
@@ -53,7 +53,7 @@ def login():
                         if bcrypt.check_password_hash(user_by_username.password, password):
                             login_user(user_by_username, remember_me)
                             session['login_failure_count'] = 0
-                            flask.flash('Logged in successfully. (Username)')
+                            flash('Correct credentials')
                             return redirect(url_for('auth.login_2fa'))
                         else:
                             session['login_failure_count'] += 1
@@ -63,7 +63,7 @@ def login():
                         if bcrypt.check_password_hash(user_by_email.password, password):
                             login_user(user_by_email)
                             session['login_failure_count'] = 0
-                            flask.flash('Logged in successfully. (Email)')
+                            flash('Correct credentials')
                             return redirect(url_for('auth.login_2fa'))
                         else:
                             session['login_failure_count'] += 1
