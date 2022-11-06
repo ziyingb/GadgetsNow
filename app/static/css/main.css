@@ -132,3 +132,48 @@ body {
   margin-bottom: 250px;
   clear: both;
 }
+
+.hovereffect {
+  position: relative;
+}
+
+.img-responsive {
+  opacity: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: .5s ease;
+  backface-visibility: hidden;
+}
+
+.overlay {
+  transition: .5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: rgba(0, 0, 0, 0.4);
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.hovereffect:hover .img-responsive {
+  opacity: 0.3;
+}
+
+.hovereffect:hover .overlay {
+  opacity: 1;
+}
+
+.info {
+  background-color: black;
+  color: white;
+  font-size: 16px;
+  padding: 16px 32px;
+}
+
+a {
+  color: black; /* blue colors for links too */
+  text-decoration: inherit; /* no underline */
+}
