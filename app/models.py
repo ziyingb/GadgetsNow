@@ -124,7 +124,11 @@ class ProductInformation(sa.Model):
         self.price_stripe = price_stripe
 
     def save(self):
-        sa.session.add ( self )
+        sa.session.commit()
+        return True
+
+    def delete(self):
+        sa.session.delete(self)
         sa.session.commit()
         return True 
 
