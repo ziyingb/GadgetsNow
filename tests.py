@@ -1,19 +1,27 @@
 from os import name
-import unittest
-from app.forms import LoginForm
-from app import app
-import secrets
+import unittest 
+import flask 
+from app import app 
+import secrets 
 
 class TestHello(unittest.TestCase): 
-    def test_product_information(self):
+    def setUp(self): 
+        app.testing = True 
+        self.app = app.test_client() 
+        app.secret_key = secrets.token_urlsafe(16) 
+ 
+    def test_landing(self): 
+        rv = self.app.get('/') 
+        self.assertEqual(rv.status, '200 OK') 
+ 
+    def test_register_login_submit(self): 
+        #test register 
+        rv = self.app.post('/register', data={ 
+            "username": "test",
+            "email": "test@test.com" ,
+            "password": "test"
+        }) 
+        assert('{"status": "Register successful"}' in rv.data.decode("utf-8")) 
 
-    # GIVEN a User model
-    # WHEN a new User is created
-    # THEN check the username fields are defined correctly
- 
-        login = LoginForm ('testing@gmail.com', 'testingpassword')
-        assert login.usernameoremail == 'testing@gmail.com'
-        assert login.password == 'testingpassword'
- 
-if name == '__main__':
+if name == '__main__': 
     unittest.main()
