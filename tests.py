@@ -39,7 +39,7 @@ class TestHello(unittest.TestCase):
 
         # user account logout 
         rv = self.app.get('/logout', follow_redirects=True) 
-        assert('<input class="login-input input' in rv.data.decode("utf-8"))\
+        assert('<input class="login-input input' in rv.data.decode("utf-8"))
         
         # home page 
         rv = self.app.get('/', follow_redirects=True) 
