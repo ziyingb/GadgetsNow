@@ -9,4 +9,5 @@ virtualenv .venv
 // If error when activating run "Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted"
 pip install -r requirements.txt
 
-Please include whatever additional pips in the requirements txt 
+//To run the app
+flask run
