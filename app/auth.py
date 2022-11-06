@@ -144,15 +144,18 @@ def cart():
             tempdict = {'price' : item.prod_price_stripe,
                         'quantity' : item.quantity}
             line_items.append(tempdict)
-        stripe.api_key = app.config['STRIPE_SECRET_KEY']
-        ss = stripe.checkout.Session.create(
-        payment_method_types=['card'],
-        line_items = line_items,
-        mode='payment',
-        success_url = url_for('views.success', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url = url_for('views.unsuccessful', _external=True),
-        )
-        return render_template('shopping_cart.html', checkout_session_id=ss['id'],checkout_public_key=app.config['STRIPE_PUBLIC_KEY'], products = products)
+        if products:
+            stripe.api_key = app.config['STRIPE_SECRET_KEY']
+            ss = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items = line_items,
+                mode='payment',
+                success_url = url_for('views.success', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url = url_for('views.unsuccessful', _external=True),
+            )
+            return render_template('shopping_cart.html', checkout_session_id=ss['id'],checkout_public_key=app.config['STRIPE_PUBLIC_KEY'], products = products)
+        else:
+            return render_template('shopping_cart', products = products)
     else:
         return redirect(url_for('auth.login'))
 
