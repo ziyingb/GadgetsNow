@@ -1,6 +1,6 @@
 from os import name
 import unittest
-from app.models import LoginForm
+from app.forms import LoginForm
 from app import app
 import secrets
 
