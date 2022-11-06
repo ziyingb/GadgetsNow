@@ -9,7 +9,6 @@ pipeline {
 				sh '. venv/bin/activate'
 				sh 'pip install -r requirements.txt'
 				git branch: 'main', url: 'https://github.com/ziyingb/GadgetsNow.git'
-				bat label: '', script: 'python tests.py'
 			}
 		}
 
