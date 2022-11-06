@@ -252,23 +252,6 @@ def userInformation():
         flask.flash('Please login before proceeding.')
         return redirect(url_for('auth.login'))
 
-
-@auth.route('/checkout', methods=['GET', 'POST'])
-def checkout():
-    stripe.api_key = app.config['STRIPE_SECRET_KEY']
-    session = stripe.checkout.Session.create(
-        payment_method_types=['card'],
-        line_items = [{
-            'price': 'price_1LufGYH9RvLfX3o6QqrFdeyi',
-            'quantity': 5,
-        }],
-        mode='payment',
-        success_url = url_for('views.success', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url = url_for('views.unsuccessful', _external=True),
-    )
-    return render_template('checkout.html', checkout_session_id=session['id'],checkout_public_key=app.config['STRIPE_PUBLIC_KEY'])
-
-
 @app.route('/stripe_webhook', methods=['POST'])
 def stripe_webhook():
     print('WEBHOOK CALLED')
