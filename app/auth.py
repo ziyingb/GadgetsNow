@@ -52,26 +52,21 @@ def login():
                     if user_by_username:
                         password = password + user_by_username.salt
                         if bcrypt.check_password_hash(user_by_username.password, password):
-                            session['user_tobevalidated'] = usernameoremail
-                            session['remember_me_input'] = remember_me
-                            # login_user(user_by_username, remember_me)
+                            login_user(user_by_username, remember_me)
                             session['login_failure_count'] = 0
                             # flask.flash('Logged in successfully. (Username)')
-                            # return redirect(url_for('auth.login_2fa'))
-                            return redirect(url_for('views.index'))
+                            return redirect(url_for('auth.login_2fa'))
+#                             return redirect(url_for('views.index'))
                         else:
                             session['login_failure_count'] += 1
                             msg = "Invalid Credentials. Please try again!"
                     elif user_by_email:
                         password = password + user_by_email.salt
                         if bcrypt.check_password_hash(user_by_email.password, password):
-                            session['user_tobevalidated'] = usernameoremail
-                            session['remember_me_input'] = remember_me
-                            # login_user(user_by_email, remember_me)
+                            login_user(user_by_email, remember_me)
                             session['login_failure_count'] = 0
-                            # flask.flash('Logged in successfully. (Email)')
-                            # return redirect(url_for('auth.login_2fa'))
-                            return redirect(url_for('views.index'))
+                            return redirect(url_for('auth.login_2fa'))
+#                             return redirect(url_for('views.index'))
                         else:
                             session['login_failure_count'] += 1
                             msg = "Invalid Credentials. Please try again!"
