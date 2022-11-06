@@ -15,8 +15,8 @@ import pyotp
 
 auth = Blueprint('auth', __name__)
 s = URLSafeTimedSerializer('GadgetsNow3103TimedSerializer!')
-uid_private_key = '$2a$12$nimtZBhjl.7PTRdnoQ/viOWz200MV9eYAIp.OAb71MpR7rygDVZt6' #UserID GadgetsNow 
-password_private_key = '$2a$12$6uFb4m9raet4ofAgIIrQmuXVF7NTlKiXNHydqi/B5YjhllBlYHghC' #Password: Gadgetsnow3103!
+uid_private_key = '$2a$12$nimtZBhjl.7PTRdnoQ/viOWz200MV9eYAIp.OAb71MpR7rygDVZt6' 
+password_private_key = '$2a$12$6uFb4m9raet4ofAgIIrQmuXVF7NTlKiXNHydqi/B5YjhllBlYHghC' 
 
 # provide login manager with load_user callback
 @lm.user_loader
